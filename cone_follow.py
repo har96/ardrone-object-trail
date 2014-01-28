@@ -39,10 +39,10 @@ if not video_path:
 #
 #  Setup video capture
 #
-	cap = cv2.VideoCapture(int(vidnum))
+#	cap = cv2.VideoCapture(int(vidnum))
 else:
     print "Using %s" % video_path
-    cap = cv2.VideoCapture(video_path)
+   # cap = cv2.VideoCapture(video_path)
 
 def draw_crosshairs(frame, rect):
     x,y,w,h = rect
@@ -55,20 +55,23 @@ def draw_crosshairs(frame, rect):
 while(True):
 
     # capture frame from camera
-    ret, frame = cap.read()
+    frame = cv2.imread("out.jpeg", cv2.CV_LOAD_IMAGE_COLOR)
 
+    if frame is None:
+		continue
 	# Scale down frame
-    frame = cv2.resize(frame, (0,0), frame, 0.25, 0.25, cv2.INTER_AREA)
+    #frame = cv2.resize(frame, (0,0), frame, 0.25, 0.25, cv2.INTER_AREA)
 
     rects = []
     for x,y,w,h in cone_track.get_obs(frame):
         rects.append( (x,y,w,h) )
         cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
 
-    rects.sort(key=lambda x: x[2]*x[3], reverse=True)
-    max_rect = rects[0]
-    target = ( max_rect[0] + (max_rect[2]/2), max_rect[1] + (max_rect[3]/2) )
-    frame = draw_crosshairs(frame, max_rect)
+    if rects:
+        rects.sort(key=lambda x: x[2]*x[3], reverse=True)
+        max_rect = rects[0]
+        target = ( max_rect[0] + (max_rect[2]/2), max_rect[1] + (max_rect[3]/2) )
+        frame = draw_crosshairs(frame, max_rect)
 
     # display on screen camera frame
     cv2.imshow('frame',frame)
@@ -83,7 +86,7 @@ while(True):
 #  
 #  Release video capture object
 #
-cap.release()
+#cap.release()
 
 #
 #  Close and destroy display window
