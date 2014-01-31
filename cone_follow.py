@@ -18,33 +18,10 @@ SAFE_OFFSET = 50
 # Print OpenCV version
 print "OpenCV version:", cv2.__version__
 
-# Capture numbers for video camera
-#  0 = /dev/video0
-#  1 = /dev/video1
-#  etc...
-
-#
-#  Parse the input command line
-#
-video_path = None
-if len(sys.argv) == 2:
-    vidnum = sys.argv[1]
-    if not vidnum.isdigit():
-        video_path = vidnum
-else:
-    vidnum = 0
-
-if not video_path:
-	print "Using /dev/video%d" % int(vidnum)
-	print " press 'q' to quit"
-
 #
 #  Setup video capture
 #
-#	cap = cv2.VideoCapture(int(vidnum))
-else:
-    print "Using %s" % video_path
-   # cap = cv2.VideoCapture(video_path)
+cap = cv2.VideoCapture("tcp://192.168.1.1:5555")
 
 def draw_crosshairs(frame, rect):
     x,y,w,h = rect
@@ -58,13 +35,18 @@ def draw_crosshairs(frame, rect):
 #  Loop until 'q' is pressed
 #
 def main_loop():
+    i = 0
     while(True):
 
         # capture frame from camera
-        frame = cv2.imread("out.jpeg", cv2.CV_LOAD_IMAGE_COLOR)
+        if cap.grab():
+            _, frame = cap.retrieve()
+        else:
+            continue
 
         if frame is None:
     		continue
+
     	# Scale down frame
         #frame = cv2.resize(frame, (0,0), frame, 0.25, 0.25, cv2.INTER_AREA)
 
